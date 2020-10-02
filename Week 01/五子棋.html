@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicTacToe</title>
+    <style>
+        .square {
+            display: inline-block;
+            box-sizing: border-box;
+            border: 1px solid white;
+            width: 80px;
+            height: 80px;
+            background: yellowgreen;
+
+            font-size: 40px;
+            line-height: 80px;
+            vertical-align: middle;
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="board"></div>
+</body>
+
+<script type="module">
+    import Game from './game.js';
+    /** 棋盘大小 */
+    const BoardSize = 15;
+    /** 连成多少会判定为胜利 */
+    const WinCount = 5;
+    const board = document.getElementById('board');
+
+    new Game(board, BoardSize, WinCount)
+
+</script>
+
+</html>
