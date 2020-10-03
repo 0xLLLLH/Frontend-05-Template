@@ -229,6 +229,8 @@ export default class Game {
 
   /**
    * 寻找当前玩家的「最佳」选择。
+   * @param alpha 第一个玩家能获得的最大分数
+   * @param beta 第二个玩家能获得的最大分数
    * @param deep 最大搜索深度
    */
   findBestChoice = (

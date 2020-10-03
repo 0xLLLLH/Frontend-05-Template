@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>红绿灯</title>
+    <style>
+        .light {
+            display: inline-block;
+            border: 2px solid #000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            opacity: 0.3;
+        }
+
+        .red {
+            background: red;
+        }
+
+        .yellow {
+            background: yellow;
+        }
+
+        .green {
+            background: green;
+        }
+
+        .active {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div class="light red"></div>
+        <div class="light yellow"></div>
+        <div class="light green"></div>
+    </div>
+    <button id="next">next</button>
+</body>
+<script>
+    const queue = [{ color: 'red', duration: 5 }, { color: 'yellow', duration: 2 }, { color: 'green', duration: 10 }];
+    let idx = 0;
+    let auto = true;
+
+    function TrafficLight() {
+        document.querySelectorAll('.light').forEach(el => el.classList.remove('active'));
+        document.querySelector(`.${queue[idx].color}`).classList.add('active');
+        const timeout = queue[idx].duration * 1000;
+
+        if (auto) {
+            setTimeout(() => {
+                idx = (idx + 1) % queue.length;
+                TrafficLight();
+            }, timeout)
+        }
+    }
+
+    TrafficLight();
+
+    // 手动控制
+    document.getElementById('next').addEventListener('click', () => {
+        auto = false;
+        idx = (idx + 1) % queue.length;
+
+        TrafficLight();
+    })
+
+
+</script>
+
+</html>
