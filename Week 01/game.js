@@ -195,7 +195,7 @@ export default class Game {
                             this.pattern[i][j] = 0;
                             continue;
                         }
-                        else if (score < beta) {
+                        else if (this.currentTurn % 2 === 1 && score < beta) {
                             // 恢复
                             this.pattern[i][j] = 0;
                             continue;
