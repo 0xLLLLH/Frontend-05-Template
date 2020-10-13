@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapEditor</title>
+    <style>
+        .map {
+            width: 600px;
+            height: 600px;
+            background: #fff;
+            line-height: 5px;
+        }
+
+        .cell {
+            display: block;
+            box-sizing: border-box;
+            margin: 0 1px 1px 0;
+            width: 5px;
+            height: 5px;
+            background: lightgray;
+            float: left;
+        }
+
+        .wall {
+            background: black;
+        }
+
+        .searched {
+            background: yellowgreen;
+        }
+
+        .path {
+            background: green;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="map" id="app"></div>
+    <button id="btn_save">Save</button>
+    <button class="btn_path" data-method="AStar">A-Star</button>
+    <button class="btn_path" data-method="dij">Dij</button>
+    <button class="btn_path" data-method="bestFirst">BestFirst</button>
+</body>
+<script type="module">
+    import PriorityQueue from './PriorityQueue.js';
+
+    const STORAGE_KEY = 'MAP'
+    const MapVal = {
+        NULL: 0,
+        WALL: 1,
+        SEARCHED: 2,
+        PATH: 3,
+    }
+    const MapSize = 100;
+    const app = document.getElementById('app');
+    let storedMap = null;
+    try {
+        storedMap = JSON.parse(localStorage.getItem(STORAGE_KEY))
+    } catch {
+    }
+
+    const map = storedMap || Array(MapSize * MapSize).fill(MapVal.NULL);
+    // 缓存dom
+    const cells = Array(MapSize * MapSize).fill(null);
+    let drawing = false;
+
+    function sleep(t) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, t)
+        })
+    }
+
+    function renderCell() {
+        for (let i = 0; i < MapSize; i++) {
+            for (let j = 0; j < MapSize; j++) {
+                if (!cells[i * MapSize + j]) {
+                    const c = document.createElement('div');
+                    cells[i * MapSize + j] = c;
+                    c.classList.add('cell');
+                    c.addEventListener('mouseover', () => {
+                        if (drawing) {
+                            map[i * MapSize + j] = MapVal.WALL;
+                            cells[i * MapSize + j].classList.toggle('wall', true)
+                        }
+                    })
+
+                    app.appendChild(c);
+                    if (j === MapSize - 1) {
+                        app.appendChild(document.createElement('br'));
+                    }
+
+                }
+                cells[i * MapSize + j].classList.toggle('wall', map[i * MapSize + j] === MapVal.WALL)
+                cells[i * MapSize + j].classList.toggle('searched', map[i * MapSize + j] === MapVal.SEARCHED)
+                cells[i * MapSize + j].classList.toggle('path', map[i * MapSize + j] === MapVal.PATH)
+            }
+        }
+    }
+
+    document.addEventListener('mousedown', e => {
+        drawing = true;
+        e.preventDefault();
+    })
+    document.addEventListener('mouseup', () => {
+        drawing = false;
+    })
+    document.addEventListener('contextmenu', e => {
+        map.fill(0);
+        renderCell();
+
+        e.preventDefault();
+    });
+
+    document.getElementById('btn_save').addEventListener('click', () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(map.map(x => x === MapVal.WALL ? MapVal.WALL : MapVal.NULL)));
+        alert('保存成功！')
+    })
+
+    renderCell();
+
+    async function path(map, start, end, method) {
+        // 存储搜索过程产生的前驱节点信息
+        const pre = Array(MapSize * MapSize).fill(MapVal.NULL);
+        // 存储已经经过的距离，用于优化路径
+        const cost = Array(MapSize * MapSize).fill(Number.MAX_SAFE_INTEGER);
+        /** 估算到终点的距离。因为是八方向的移动，所以使用切比雪夫距离。 */
+        const distance = (a, b) => {
+            const [xa, ya] = a;
+            const [xb, yb] = b;
+            const dx = Math.abs(xa - xb)
+            const dy = Math.abs(ya - yb)
+
+            return Math.max(dx, dy)
+        }
+        // A*期望：f(x) = g(x) + h(x)
+        // 此处g(x)为cost[x]，h(x)为distance(x)
+        const fx = (x) => cost[x[0] * MapSize + x[1]] + distance(x, end);
+        const Methods = {
+            AStar: (a, b) => fx(b) - fx(a),
+            // g(x) = 0
+            bestFirst: (a, b) => distance(b, end) - distance(a, end),
+            // h(x) = 0
+            dij: (a, b) => cost[b[0] * MapSize + b[1]] - cost[a[0] * MapSize + a[1]]
+        }
+
+        const queue = new PriorityQueue(Methods[method], [start]);
+        const dirs = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, -1], [-1, 1]];
+        const val = start[0] * MapSize + start[1];
+        cost[val] = 0;
+        map[val] = MapVal.SEARCHED;
+        pre[val] = val;
+
+        while (!queue.empty()) {
+            const cur = queue.dequeue();
+
+            renderCell()
+            await sleep(20);
+
+            if (cur[0] === end[0] && cur[1] === end[1]) {
+                break;
+            }
+
+            for (let dir of dirs) {
+                const x = cur[0] + dir[0];
+                const y = cur[1] + dir[1];
+                const curIdx = cur[0] * MapSize + cur[1];
+                const nextIdx = x * MapSize + y;
+
+                if (x >= 0 && x < MapSize && y >= 0 && y < MapSize) {
+                    if (map[nextIdx] === MapVal.NULL) {
+                        map[nextIdx] = MapVal.SEARCHED;
+                        pre[nextIdx] = curIdx;
+                        cost[nextIdx] = cost[curIdx] + 1;
+                        queue.enqueue([x, y]);
+
+                    } else if (map[nextIdx] === MapVal.SEARCHED && cost[curIdx] + 1 < cost[nextIdx]) {
+                        // 对于访问过的位置，如果有更短的路径，则更新
+                        pre[nextIdx] = curIdx;
+                        cost[nextIdx] = cost[curIdx] + 1;
+                    }
+                }
+            }
+        }
+
+        // 无法到达目标位置
+        if (!pre[end[0] * MapSize + end[1]]) {
+            return false;
+        }
+
+        let p = end[0] * MapSize + end[1];
+        // 从后往前推。start的前驱是start，以此结束循环。
+        while (p !== pre[p]) {
+            map[p] = MapVal.PATH;
+            p = pre[p];
+            renderCell()
+            await sleep(30);
+
+        }
+        map[p] = MapVal.PATH;
+        renderCell()
+
+        return true;
+    }
+
+    Array.from(document.querySelectorAll('.btn_path')).map(el => {
+        el.addEventListener('click', async (e) => {
+            map.map((x, idx) => map[idx] = x === MapVal.WALL ? MapVal.WALL : MapVal.NULL);
+            await path(map, [0, 0], [30, 50], e.target.dataset['method']);
+        })
+    })
+
+
+</script>
+
+</html>
