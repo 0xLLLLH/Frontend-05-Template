@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LL Algorithm</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    const regex = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+    const dict = ['Number', 'Whitespace', 'LineTerminator', '*', '/', '+', '-']
+
+    function* tokenize(source) {
+        let lastIndex = 0;
+        while (true) {
+            let result = regex.exec(source);
+
+            if (!result) break;
+            // 判断是否连续匹配
+            if (regex.lastIndex - result[0].length > lastIndex) {
+                // TODO: 抛出异常
+                break;
+            }
+
+            lastIndex = regex.lastIndex;
+
+            for (let idx = 0; idx < dict.length; idx++) {
+                if (result[idx + 1]) {
+                    yield {
+                        type: dict[idx],
+                        value: result[idx + 1]
+                    };
+                }
+            }
+
+        }
+        yield { type: 'EOF' };
+    }
+
+    for (var token of tokenize('1024 + 10 * 25')) {
+        console.log(token)
+    }
+
+    function MultiplicativeExpression(source) {
+        if (source[0].type === 'Number') {
+            let node = {
+                type: 'MultiplicativeExpression',
+                children: [source[0]]
+            }
+            source.shift();
+            source.unshift(node);
+
+            return MultiplicativeExpression(source);
+        } else if (source[0].type === 'MultiplicativeExpression' && (source[1].type === '*' || source[1].type === '/')) {
+            let node = {
+                type: 'MultiplicativeExpression',
+                operator: source[1].type,
+                children: []
+            }
+            node.children.unshift(source.shift());
+            node.children.unshift(source.shift());
+            node.children.unshift(source.shift());
+
+            source.unshift(node);
+
+            return MultiplicativeExpression(source)
+        }
+        else if (source[0].type === 'MultiplicativeExpression') {
+            return source[0];
+        }
+
+        return MultiplicativeExpression(source)
+    }
+
+    function AdditiveExpression(source) {
+        if (source[0].type === 'MultiplicativeExpression') {
+            let node = {
+                type: 'AdditiveExpression',
+                children: [source[0]]
+            }
+            source.unshift();
+            source.shift(node);
+
+            return AdditiveExpression(source)
+        }
+        if (source[0].type === 'AdditiveExpression' && (source[1] === '+' || source[1] === '-')) {
+            let node = {
+                type: 'AdditiveExpression',
+                operator: source[1],
+                children: []
+            }
+            node.children.shift(source.unshift());
+            node.children.shift(source.unshift());
+            // 后面可能是乘法
+            MultiplicativeExpression(source)
+            node.children.shift(source.unshift());
+
+            source.unshift(node);
+
+            return AdditiveExpression(source)
+        }
+
+        if (source[0].type === 'AdditiveExpression') {
+            return source[0]
+        }
+
+        MultiplicativeExpression(source)
+        return AdditiveExpression(source)
+    }
+
+    let source = [];
+    let MultiplicativeTest = '10 * 10 + 10 * 25 / 5';
+    for (let token of tokenize(MultiplicativeTest)) {
+        if (token.type !== 'Whitespace' && token.type !== 'LineTerminator') {
+            source.push(token);
+        }
+    }
+
+    console.log(AdditiveExpression(source))
+</script>
+
+</html>
