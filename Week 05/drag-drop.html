@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DragDrop</title>
+</head>
+
+<body>
+    <div id="container">文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+        文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字 文字
+    </div>
+    <div id="draggable" style="display: inline-block; width: 100px;height: 100px;background-color:indianred;"></div>
+</body>
+<script>
+    const draggable = document.getElementById('draggable');
+    const container = document.getElementById('container');
+
+    const rangeList = [];
+    const textNode = container.childNodes[0];
+
+    for (let i = 0; i < textNode.length; i++) {
+        const range = document.createRange();
+        range.setStart(textNode, i);
+        range.setEnd(textNode, i);
+        rangeList.push(range);
+    }
+
+    const findNearestRange = (x, y) => {
+        let minDist = Infinity;
+        let nearestRange = null;
+
+        rangeList.map(range => {
+            const rect = range.getBoundingClientRect();
+            const dist = (x - rect.x) ** 2 + (y - rect.y) ** 2;
+
+            if (dist < minDist) {
+                minDist = dist;
+                nearestRange = range;
+            }
+        });
+
+        return nearestRange;
+    }
+
+
+    let lastPos = [0, 0];
+    draggable.addEventListener('mousedown', (event) => {
+        let startPos = [event.clientX, event.clientY];
+
+        const move = (e) => {
+            const x = e.clientX - startPos[0] + lastPos[0];
+            const y = e.clientY - startPos[1] + lastPos[1];
+            // draggable.style.transform = `translate(${x}px,${y}px)`;
+            const range = findNearestRange(x, y);
+
+            range.insertNode(draggable)
+        }
+        const up = (e) => {
+            lastPos = [e.clientX - startPos[0] + lastPos[0], e.clientY - startPos[1] + lastPos[1]]
+            document.removeEventListener('mousemove', move)
+            document.removeEventListener('mouseup', up)
+        }
+
+        document.addEventListener('mousemove', move)
+        document.addEventListener('mouseup', up)
+    });
+
+    document.addEventListener('selectstart', e => e.preventDefault())
+
+</script>
+
+</html>
