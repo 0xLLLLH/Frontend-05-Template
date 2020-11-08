@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trie</title>
+</head>
+
+<body>
+
+</body>
+<script type="module">
+    import Trie from './trie.js';
+    const RandomInt = (max) => Math.floor(Math.random() * max + 1) % max + 1
+    const randomChar = () => String.fromCharCode('a'.charCodeAt(0) + RandomInt(26));
+    const randomString = (len) => Array(len).fill(0).map(() => randomChar()).join('');
+
+    const trie = new Trie();
+
+    trie.add('abc');
+    trie.add('abc');
+    trie.add('abcd');
+    trie.add('acd');
+
+    console.log(trie);
+
+    console.log(trie.count('abc'), trie.count('abe'));
+
+    let count = 10000;
+    while (count--) {
+        trie.add(randomString(4))
+    }
+
+    console.log(trie, trie.most())
+</script>
+
+</html>
