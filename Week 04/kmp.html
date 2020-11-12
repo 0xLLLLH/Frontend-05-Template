@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMP</title>
+</head>
+
+<body>
+
+</body>
+
+<script type="module">
+    import KMP from './kmp.js';
+
+    const runTest = (source, pattern, expectResult) => {
+        const actualResult = KMP(source, pattern);
+
+        if (actualResult !== expectResult) {
+            console.log(`Expect KMP(${source}, ${pattern}) == ${expectResult}, but it returns ${actualResult}`)
+        }
+    }
+    // 预先写好的测试用例
+    runTest('abc', 'a', 0)
+    runTest('abcabc', 'abc', 0)
+    runTest('abcabc', 'abcd', -1)
+    runTest('abdabc', 'abc', 3)
+    runTest('aaaaaa', 'a', 0)
+    runTest('baaaaaa', 'a', 1)
+    runTest('baaaaaa', 'aa', 1)
+    runTest('baaaaaa', 'aaaaaaaaa', -1)
+    runTest('abracadabrabracadabra', 'abracadabra', 0)
+
+</script>
+
+</html>
