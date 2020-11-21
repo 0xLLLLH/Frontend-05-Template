@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script type="module">
+    import { StringToNumber, NumberToString } from './code.js';
+
+    console.log('123', StringToNumber('123'));
+    console.log('0b1111', StringToNumber('0b1111'));
+    console.log('0o100', StringToNumber('0o100'));
+    console.log('0x100', StringToNumber('0x100'));
+
+
+    console.log(123, NumberToString(123, 10));
+    console.log(15, NumberToString(15, 2));
+    console.log(64, NumberToString(64, 8));
+    console.log(256, NumberToString(256, 16));
+</script>
+
+</html>
