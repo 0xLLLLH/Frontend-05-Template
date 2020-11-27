@@ -1,4 +1,6 @@
-export default function KMP(source, pattern) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+function KMP(source, pattern) {
     const pre = Array(pattern.length).fill(0);
     let j = 0;
     // 状态转移方程:
@@ -25,3 +27,4 @@ export default function KMP(source, pattern) {
     }
     return -1;
 }
+exports.default = KMP;

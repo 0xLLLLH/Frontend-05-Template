@@ -1,8 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 基于二叉堆的优先队列
  * 注释中的「大」和「小」都是按大顶堆来表述，以便于理解
  */
-export default class PriorityQueue {
+class PriorityQueue {
     constructor(compareFn, data = []) {
         /** 使用数组存储树，下标从1开始 */
         this.data = [];
@@ -98,3 +100,4 @@ export default class PriorityQueue {
         return result;
     }
 }
+exports.default = PriorityQueue;

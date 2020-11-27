@@ -1,7 +1,10 @@
-export function StringToNumber(str) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+function StringToNumber(str) {
     return Number(str);
 }
-export function NumberToString(num, radix) {
+exports.StringToNumber = StringToNumber;
+function NumberToString(num, radix) {
     let prefix = {
         [2]: "0b",
         [8]: "0o",
@@ -9,3 +12,4 @@ export function NumberToString(num, radix) {
     };
     return (prefix[radix] || "") + num.toString(radix);
 }
+exports.NumberToString = NumberToString;

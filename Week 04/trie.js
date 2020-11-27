@@ -1,4 +1,6 @@
-export default class Trie {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Trie {
     constructor() {
         this.root = Object.create(null);
     }
@@ -39,3 +41,4 @@ export default class Trie {
     }
 }
 Trie.$ = Symbol("end of string");
+exports.default = Trie;

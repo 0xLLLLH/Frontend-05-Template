@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const HumanPlayer = {
     name: "玩家",
     token: "⭕️",
@@ -12,7 +14,7 @@ const BoardTokenMap = {
     [HumanPlayer.value]: HumanPlayer.token,
     [AIPlayer.value]: AIPlayer.token,
 };
-export default class Game {
+class Game {
     constructor(board, BoardSize = 3, WinCount = 3) {
         this.board = board;
         this.BoardSize = BoardSize;
@@ -255,3 +257,4 @@ Game.directions = [
     [1, 1],
     [1, -1],
 ];
+exports.default = Game;
