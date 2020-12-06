@@ -3,9 +3,52 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const EOF = Symbol("EOF");
 let currentToken = null;
 let currentAttribute = null;
+let currentTextNode = null;
+const stack = [{ type: "document", children: [] }];
 function emit(token) {
-    if (token.type !== "text")
-        console.log(token);
+    let top = stack[stack.length - 1];
+    if (token.type === "startTag") {
+        let el = {
+            type: "element",
+            children: [],
+            attributes: [],
+        };
+        el.tagName = token.tagName;
+        for (let p in token) {
+            // FIXME: 实际上这样的写法会导致<input type="text" />出问题
+            if (p != "type" && p != "tagName") {
+                el.attributes.push({
+                    name: p,
+                    value: token[p],
+                });
+            }
+        }
+        el.parent = top;
+        top.children.push(el);
+        if (!token.isSelfClosing) {
+            stack.push(el);
+        }
+        currentTextNode = null;
+    }
+    else if (token.type === "endTag") {
+        if (top.tagName !== token.tagName) {
+            throw new Error("Tag start end doesn't match!");
+        }
+        else {
+            stack.pop();
+        }
+        currentTextNode = null;
+    }
+    else if (token.type === "text") {
+        if (!currentTextNode) {
+            currentTextNode = {
+                type: "text",
+                content: "",
+            };
+            top.children.push(currentTextNode);
+        }
+        currentTextNode.content += token.content;
+    }
 }
 function data(ch) {
     switch (ch) {
@@ -189,7 +232,6 @@ function beforeAttributeValue(ch) {
     }
 }
 function afterQuotedAttributeValue(ch) {
-    debugger;
     switch (ch) {
         case ">": {
             currentToken[currentAttribute.name] = currentAttribute.value;
@@ -298,5 +340,7 @@ function parseHTML(html) {
         state = state && state(c);
     }
     state = state && state(EOF);
+    console.log(stack);
+    debugger;
 }
 exports.default = parseHTML;

@@ -25,11 +25,66 @@ interface Attribute {
   value: string;
 }
 
+interface DOMElement {
+  type: string;
+  parent?: DOMElement;
+  children?: DOMElement[];
+  tagName?: string;
+  attributes?: Array<{ name: string; value: string }>;
+  content?: string;
+}
+
 let currentToken: Token | null = null;
 let currentAttribute: Attribute | null = null;
+let currentTextNode: DOMElement | null = null;
+const stack: DOMElement[] = [{ type: "document", children: [] }];
 
 function emit(token: Token) {
-  if (token.type !== "text") console.log(token);
+  let top = stack[stack.length - 1];
+
+  if (token.type === "startTag") {
+    let el: DOMElement = {
+      type: "element",
+      children: [],
+      attributes: [],
+    };
+
+    el.tagName = token.tagName;
+
+    for (let p in token) {
+      // FIXME: 实际上这样的写法会导致<input type="text" />出问题
+      if (p != "type" && p != "tagName") {
+        el.attributes.push({
+          name: p,
+          value: token[p],
+        });
+      }
+    }
+    el.parent = top;
+    top.children.push(el);
+
+    if (!token.isSelfClosing) {
+      stack.push(el);
+    }
+    currentTextNode = null;
+  } else if (token.type === "endTag") {
+    if (top.tagName !== token.tagName) {
+      throw new Error("Tag start end doesn't match!");
+    } else {
+      stack.pop();
+    }
+    currentTextNode = null;
+  } else if (token.type === "text") {
+    if (!currentTextNode) {
+      currentTextNode = {
+        type: "text",
+        content: "",
+      };
+
+      top.children.push(currentTextNode);
+    }
+    currentTextNode.content += token.content;
+  }
 }
 
 function data(ch: Input): State {
@@ -224,7 +279,6 @@ function beforeAttributeValue(ch: Input): State {
 }
 
 function afterQuotedAttributeValue(ch: Input): State {
-  debugger;
   switch (ch) {
     case ">": {
       currentToken[currentAttribute.name] = currentAttribute.value;
@@ -341,4 +395,7 @@ export default function parseHTML(html: string) {
   }
 
   state = state && state(EOF);
+
+  console.log(stack);
+  debugger;
 }
