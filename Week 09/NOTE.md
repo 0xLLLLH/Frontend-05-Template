@@ -2,33 +2,13 @@
 
 ## HTML解析流程
 
-### 1.词法分析——解析标签
-
 合法的HTML标签：
 1. 开始标签
 2. 结束标签
 3. 自封闭标签
 
-标签的解析涉及到的状态：
-1. `data`: 初始状态
-   1. 遇到`<`时转换为`tagOpen`
-   2. 遇到`EOF`时停止解析
-   3. 遇到其他内容解析文本节点
-2. `tagOpen`: 标签开启
-   1. 遇到`/`转换为`endTagOpen`
-   2. 如果是英文则进入`tagName`解析（需要re-consume）
-   3. 否则维持当前状态
-3. `tagName`: 解析标签名
-   1. 遇到空白符（`/^[\t\n\f ]$/`）则进入`beforeAttributeName`
-   2. 遇到`/`进入`selfClosingStartTag`
-   3. 遇到`>`进入`data`状态，准备解析下一个标签
-   4. 否则维持当前状态
-4. `endTagOpen`: 结束标签开启
-   1. 如果是英文则进入`tagName`解析（需要re-consume）
-   2. 遇到`>`报错，不能马上闭合
-   3. 遇到`EOF`报错
-5. `beforeAttributeName`: 准备解析属性名
-   1.
-6. `selfClosingStartTag`: 标签自闭合
-   1. 遇到`>`将当前token标记为自闭合标签，然后返回`data`
-   2. 其他情况报错
+具体的状态转换和emit时机参考[WHATWG 文档](https://whatwg-cn.github.io/html/multipage/parsing.html)，视频中代码展示不全导致难以进行问题的调试对比，我就遇到由于部分状态编写略有问题导致长时间debug还是没能搞定的情况，直到根据文档逐一校对后才运行正常。
+
+比对着视频来实现更合理的一种实现流程：
+1. 快速浏览视频确定ToyBrowser需要实现的状态
+2. 参考WHATWG文档中相应的状态转移过程描述进行编码。参照文档实现时需要注意：1. 创建token的时机；2.是否需要re-consume;3.emit token的时机
