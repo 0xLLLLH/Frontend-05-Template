@@ -521,6 +521,5 @@ export default function parseHTML(html: string) {
 
   state = state && state(EOF);
 
-  console.log(stack);
-  debugger;
+  return stack[0];
 }

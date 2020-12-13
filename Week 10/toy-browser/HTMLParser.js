@@ -441,7 +441,6 @@ function parseHTML(html) {
         state = state && state(c);
     }
     state = state && state(EOF);
-    console.log(stack);
-    debugger;
+    return stack[0];
 }
 exports.default = parseHTML;

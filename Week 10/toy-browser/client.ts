@@ -1,6 +1,10 @@
 import * as net from "net";
 import parseHTML from "./HTMLParser";
 import ResponseParser from "./ResponseParser";
+import "./json.js";
+import images = require("images");
+import { render } from "./render";
+import path = require("path");
 
 const HeaderKey = {
   CONTENT_TYPE: "Content-Type",
@@ -121,6 +125,12 @@ async function main() {
   let response = await request.send();
 
   const dom = parseHTML(response.body);
+
+  const viewport = images(800, 600);
+
+  render(viewport, dom);
+
+  viewport.save(path.join(__dirname, "viewport.jpg"));
   debugger;
 }
 

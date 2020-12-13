@@ -3,6 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const net = require("net");
 const HTMLParser_1 = require("./HTMLParser");
 const ResponseParser_1 = require("./ResponseParser");
+require("./json.js");
+const images = require("images");
+const render_1 = require("./render");
+const path = require("path");
 const HeaderKey = {
     CONTENT_TYPE: "Content-Type",
     CONTENT_LENGTH: "Content-Length",
@@ -81,6 +85,9 @@ async function main() {
     });
     let response = await request.send();
     const dom = HTMLParser_1.default(response.body);
+    const viewport = images(800, 600);
+    render_1.render(viewport, dom);
+    viewport.save(path.join(__dirname, "viewport.jpg"));
     debugger;
 }
 main();
