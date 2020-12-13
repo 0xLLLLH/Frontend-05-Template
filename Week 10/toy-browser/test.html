@@ -1,0 +1,55 @@
+<html>
+
+<head>
+    <title>Document</title>
+    <style>
+        body {
+            background-color: white;
+        }
+
+        #container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 380px;
+            background-color: aquamarine;
+        }
+
+        #container div {
+            width: 100px;
+            height: 100px;
+            background-color: #ff5500;
+        }
+
+        #container .large {
+            height: 150px;
+        }
+
+        #container.crossStart {
+            align-self: flex-start;
+        }
+
+        #container .crossCenter {
+            align-self: center;
+        }
+
+        #container .crossEnd {
+            align-self: flex-end;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div></div>
+        <div class="large"></div>
+        <div></div>
+
+        <div class="crossStart"></div>
+        <div class="crossEnd"></div>
+        <div class="large crossCenter"></div>
+    </div>
+    </div>
+</body>
+
+</html>
