@@ -35,10 +35,13 @@ export interface DOMElement {
   tagName?: string;
   attributes?: Array<{ name: string; value: string }>;
   content?: string;
-  computedStyle?: {
-    specificity?: string;
-    value?: string;
-  };
+  computedStyle?: Record<
+    string,
+    {
+      specificity?: number[];
+      value?: string;
+    }
+  >;
   layoutStyle?: Record<string, string | number>;
   order?: number;
 }
@@ -115,15 +118,12 @@ function specificity(selector: string) {
   const selectorParts = selector.split(" ").filter((p) => p.length);
 
   for (let part of selectorParts) {
-    const ps = part.split(/([#\.]\w+)/).filter((x) => x.length);
-    for (let p of ps) {
-      if (p.startsWith("#")) {
-        point[1]++;
-      } else if (p.startsWith(".")) {
-        point[2]++;
-      } else {
-        point[3]++;
-      }
+    if (part.startsWith("#")) {
+      point[1]++;
+    } else if (part.startsWith(".")) {
+      point[2]++;
+    } else {
+      point[3]++;
     }
   }
 
@@ -178,17 +178,17 @@ function computeCSS(el: DOMElement) {
         if (!computed[declare.property]) {
           computed[declare.property] = {};
         }
+
         if (!computed[declare.property].specificity) {
           computed[declare.property].value = declare.value;
           computed[declare.property].specificity = sp;
         } else if (
-          compareSpecificity(sp, computed[declare.property].specificity) > 0
+          compareSpecificity(sp, computed[declare.property].specificity) >= 0
         ) {
           computed[declare.property].value = declare.value;
           computed[declare.property].specificity = sp;
         }
       }
-      console.log(el.computedStyle);
     }
   }
 }

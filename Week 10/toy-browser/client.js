@@ -88,6 +88,5 @@ async function main() {
     const viewport = images(800, 600);
     render_1.render(viewport, dom);
     viewport.save(path.join(__dirname, "viewport.jpg"));
-    debugger;
 }
 main();

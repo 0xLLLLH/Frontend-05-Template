@@ -40,7 +40,7 @@ export const layout = (el: DOMElement) => {
       style[size] = null;
     }
   });
-  debugger;
+
   if (!style["flex-direction"] || style["flex-direction"] === "auto") {
     style["flex-direction"] = "row";
   }
@@ -50,11 +50,11 @@ export const layout = (el: DOMElement) => {
   if (!style["justify-content"] || style["justify-content"] === "auto") {
     style["justify-content"] = "flex-start";
   }
-  if (!style["flexWrap"] || style["flexWrap"] === "auto") {
-    style["flexWrap"] = "nowrap";
+  if (!style["flex-wrap"] || style["flex-wrap"] === "auto") {
+    style["flex-wrap"] = "nowrap";
   }
-  if (!style["align-content"] || style["align-content"] === "auto") {
-    style["align-content"] = "stretch";
+  if (!style["align-items"] || style["align-items"] === "auto") {
+    style["align-items"] = "stretch";
   }
 
   let mainSize,
@@ -116,7 +116,7 @@ export const layout = (el: DOMElement) => {
     crossEnd = "right";
   }
 
-  if (style["flexWrap"] === "wrap-reverse") {
+  if (style["flex-wrap"] === "wrap-reverse") {
     let tmp = crossStart;
     crossStart = crossEnd;
     crossEnd = tmp;
@@ -164,7 +164,7 @@ export const layout = (el: DOMElement) => {
 
     if (itemStyle.flex) {
       flexLine.push(item);
-    } else if (style["flexWrap"] === "nowrap" && isAutoMainSize) {
+    } else if (style["flex-wrap"] === "nowrap" && isAutoMainSize) {
       mainSpace -= itemStyle[mainSize] as number;
 
       if (itemStyle[crossSize] !== null && itemStyle[crossSize] !== void 0) {
@@ -196,8 +196,9 @@ export const layout = (el: DOMElement) => {
   }
 
   flexLine.mainSpace = mainSpace;
-  // main axis
-  if (style["flexWrap"] === "nowrap" || isAutoMainSize) {
+
+  // #region main axis
+  if (style["flex-wrap"] === "nowrap" || isAutoMainSize) {
     flexLine.crossSpace =
       style[crossSize] !== undefined
         ? (style[crossSize] as number)
@@ -288,7 +289,6 @@ export const layout = (el: DOMElement) => {
 
         for (let item of items) {
           let itemStyle = getStyle(item);
-          debugger;
 
           itemStyle[mainStart] = currentMain;
           itemStyle[mainEnd] =
@@ -299,8 +299,9 @@ export const layout = (el: DOMElement) => {
       }
     });
   }
-  debugger;
-  // cross axis
+  // #endregion main axis
+
+  // #region cross axis
   if (!style[crossSize]) {
     crossSpace = 0;
     elementStyle[crossSize] = 0;
@@ -317,7 +318,7 @@ export const layout = (el: DOMElement) => {
     }
   }
 
-  if (style["flexWrap"] === "wrap-reverse") {
+  if (style["flex-wrap"] === "wrap-reverse") {
     crossBase = style[crossSize];
   } else {
     crossBase = 0;
@@ -326,42 +327,42 @@ export const layout = (el: DOMElement) => {
   let lineSize = (style[crossSize] as number) / flexLines.length;
   let step = 0;
 
-  if (style["align-content"] === "flex-start") {
+  if (style["align-items"] === "flex-start") {
     crossBase += 0;
     step = 0;
   }
 
-  if (style["align-content"] === "flex-end") {
+  if (style["align-items"] === "flex-end") {
     crossBase += crossSign * crossSpace;
     step = 0;
   }
-  if (style["align-content"] === "center") {
+  if (style["align-items"] === "center") {
     crossBase += (crossSign * crossSpace) / 2;
     step = 0;
   }
-  if (style["align-content"] === "space-between") {
+  if (style["align-items"] === "space-between") {
     crossBase += 0;
     step = crossSpace / (flexLines.length - 1);
   }
-  if (style["align-content"] === "space-around") {
+  if (style["align-items"] === "space-around") {
     step = crossSpace / flexLines.length;
     crossBase += (crossSign * step) / 2;
   }
-  if (style["align-content"] === "stretch") {
+  if (style["align-items"] === "stretch") {
     crossBase += 0;
     step = 0;
   }
 
   for (let line of flexLines) {
     let lineCrossSize =
-      style["align-content"] === "stretch"
+      style["align-items"] === "stretch"
         ? line.crossSpace + crossSpace / flexLines.length
         : line.crossSpace;
 
     for (let item of line) {
       let itemStyle = getStyle(item);
 
-      let align = itemStyle.alignSelf || style["align-items"];
+      let align = itemStyle["align-self"] || style["align-items"];
 
       if (item === null) {
         itemStyle[crossSize] = align === "stretch" ? lineCrossSize : 0;
@@ -407,4 +408,5 @@ export const layout = (el: DOMElement) => {
 
     crossBase += crossSign * (lineCrossSize + step);
   }
+  // #endregion
 };

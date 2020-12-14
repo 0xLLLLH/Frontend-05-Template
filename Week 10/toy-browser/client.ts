@@ -131,7 +131,6 @@ async function main() {
   render(viewport, dom);
 
   viewport.save(path.join(__dirname, "viewport.jpg"));
-  debugger;
 }
 
 main();

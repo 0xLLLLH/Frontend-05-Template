@@ -66,17 +66,14 @@ function specificity(selector) {
     const point = [0, 0, 0, 0];
     const selectorParts = selector.split(" ").filter((p) => p.length);
     for (let part of selectorParts) {
-        const ps = part.split(/([#\.]\w+)/).filter((x) => x.length);
-        for (let p of ps) {
-            if (p.startsWith("#")) {
-                point[1]++;
-            }
-            else if (p.startsWith(".")) {
-                point[2]++;
-            }
-            else {
-                point[3]++;
-            }
+        if (part.startsWith("#")) {
+            point[1]++;
+        }
+        else if (part.startsWith(".")) {
+            point[2]++;
+        }
+        else {
+            point[3]++;
         }
     }
     return point;
@@ -124,12 +121,11 @@ function computeCSS(el) {
                     computed[declare.property].value = declare.value;
                     computed[declare.property].specificity = sp;
                 }
-                else if (compareSpecificity(sp, computed[declare.property].specificity) > 0) {
+                else if (compareSpecificity(sp, computed[declare.property].specificity) >= 0) {
                     computed[declare.property].value = declare.value;
                     computed[declare.property].specificity = sp;
                 }
             }
-            console.log(el.computedStyle);
         }
     }
 }
