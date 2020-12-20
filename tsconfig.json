@@ -1,6 +1,6 @@
 {
   "compileOnSave": true,
-  "include": ["**/*.ts"],
+  "include": ["./**/*.ts"],
   "compilerOptions": {
     "checkJs": false,
     "target": "es2018",
