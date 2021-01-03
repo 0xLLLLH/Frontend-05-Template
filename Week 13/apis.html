@@ -9,25 +9,43 @@
 
 <body>
     <script>
+        const isInheritFrom = (sub, sup) => {
+            let func = sub;
+            while (func.__proto__ !== Object.__proto__) {
+                if (func === sub) {
+                    return true
+                }
+                func = func.__proto__;
+            }
+            return false;
+        }
         let apis = Object.getOwnPropertyNames(window);
+
+        // events
+        apis = apis.filter(n => !n.startsWith('on'))
 
         // js
         let names = ["Object", "Function", "Array", "Number", "parseFloat", "parseInt", "Infinity", "NaN", "undefined", "Boolean", "String", "Symbol", "Date", "Promise", "RegExp", "Error", "EvalError", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "globalThis", "JSON", "Math", "console", "Intl", "ArrayBuffer", "Uint8Array", "Int8Array", "Uint16Array", "Int16Array", "Uint32Array", "Int32Array", "Float32Array", "Float64Array", "Uint8ClampedArray", "BigUint64Array", "BigInt64Array", "DataView", "Map", "BigInt", "Set", "WeakMap", "WeakSet", "Proxy", "Reflect", "decodeURI", "decodeURIComponent", "encodeURI", "encodeURIComponent", "escape", "unescape", "eval", "isFinite", "isNaN", "Option", "Image", "Audio"];
         apis = apis.filter(n => names.indexOf(n) === -1)
 
         // HTML Living Standar(https://html.spec.whatwg.org/multipage/#worker)
-        names = ['Window', "Worker", 'WebSocket'];
+        names = ['WebSocket', 'ValidityState'];
         apis = apis.filter(n => names.indexOf(n) === -1)
+        apis = apis.filter(n => !n.startsWith('Canvas'))
+
+        // https://dom.spec.whatwg.org/
+        names = ['Attr', 'CDATASection', 'CharacterData', 'ChildNode', 'Comment', 'CustomEvent', 'Document', 'DocumentFragment', 'DocumentType', 'DOMError', 'DOMException', 'DOMImplementation', 'DOMString', 'DOMTimeStamp', 'DOMStringList', 'DOMTokenList', 'Element', 'Event', 'EventTarget', 'HTMLCollection', 'MutationObserver', 'MutationRecord', 'NamedNodeMap', 'Node', 'NodeFilter', 'NodeIterator', 'NodeList', 'NonDocumentTypeChildNode', 'ParentNode', 'ProcessingInstruction', 'Selection', 'Range', 'Text', 'TextDecoder', 'TextEncoder', 'TimeRanges', 'TreeWalker', 'URL', 'Window', 'Worker', 'XMLDocument']
+        apis = apis.filter(n => !n.startsWith('DOM'))
 
         // https://w3c.github.io/uievents/
         names = ['WheelEvent'];
         apis = apis.filter(n => names.indexOf(n) === -1)
 
         // https://webaudio.github.io/web-audio-api/
-        names = ['WaveShaperNode', 'AnalyserNode', 'BiquadFilterNode'];
+        names = ['PeriodicWave'];
         apis = apis.filter(n => names.indexOf(n) === -1)
-        apis = apis.filter(n => !(window[n] && window[n].__proto__ === AudioNode))
-        // apis = apis.filter(n => !n.startsWith('Audio'))
+        apis = apis.filter(n => !n.startsWith('Audio'))
+        apis = apis.filter(n => !(window[n] && isInheritFrom(window[n], AudioNode)))
 
         // webkit特定属性
         apis = apis.filter(n => !n.startsWith('webkit') && !n.startsWith('WebKit'))
@@ -44,6 +62,14 @@
         // https://streams.spec.whatwg.org/
         apis = apis.filter(n => !n.startsWith('WritableStream'))
 
+        // https://www.w3.org/TR/SVG11/
+        apis = apis.filter(n => !n.startsWith('SVG'))
+
+        // https://w3c.github.io/webrtc-pc/#rtcrtpreceiver-interface
+        apis = apis.filter(n => !n.startsWith('RTC'))
+
+        // https://drafts.css-houdini.org/css-typed-om-1/
+        apis = apis.filter(n => !n.startsWith('CSS'))
 
         console.log(apis)
     </script>
