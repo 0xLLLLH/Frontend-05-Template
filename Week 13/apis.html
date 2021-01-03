@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apis</title>
+</head>
+
+<body>
+    <script>
+        let apis = Object.getOwnPropertyNames(window);
+
+        // js
+        let names = ["Object", "Function", "Array", "Number", "parseFloat", "parseInt", "Infinity", "NaN", "undefined", "Boolean", "String", "Symbol", "Date", "Promise", "RegExp", "Error", "EvalError", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "globalThis", "JSON", "Math", "console", "Intl", "ArrayBuffer", "Uint8Array", "Int8Array", "Uint16Array", "Int16Array", "Uint32Array", "Int32Array", "Float32Array", "Float64Array", "Uint8ClampedArray", "BigUint64Array", "BigInt64Array", "DataView", "Map", "BigInt", "Set", "WeakMap", "WeakSet", "Proxy", "Reflect", "decodeURI", "decodeURIComponent", "encodeURI", "encodeURIComponent", "escape", "unescape", "eval", "isFinite", "isNaN", "Option", "Image", "Audio"];
+        apis = apis.filter(n => names.indexOf(n) === -1)
+
+        // HTML Living Standar(https://html.spec.whatwg.org/multipage/#worker)
+        names = ['Window', "Worker", 'WebSocket'];
+        apis = apis.filter(n => names.indexOf(n) === -1)
+
+        // https://w3c.github.io/uievents/
+        names = ['WheelEvent'];
+        apis = apis.filter(n => names.indexOf(n) === -1)
+
+        // https://webaudio.github.io/web-audio-api/
+        names = ['WaveShaperNode', 'AnalyserNode', 'BiquadFilterNode'];
+        apis = apis.filter(n => names.indexOf(n) === -1)
+        apis = apis.filter(n => !(window[n] && window[n].__proto__ === AudioNode))
+        // apis = apis.filter(n => !n.startsWith('Audio'))
+
+        // webkit特定属性
+        apis = apis.filter(n => !n.startsWith('webkit') && !n.startsWith('WebKit'))
+
+        // https://www.khronos.org/registry/webgl/specs/latest/2.0/
+        apis = apis.filter(n => !n.startsWith('WebGL'))
+
+        // https://xhr.spec.whatwg.org/
+        apis = apis.filter(n => !n.startsWith('XML'))
+
+        //https://www.w3.org/TR/DOM-Level-3-XPath/xpath.html
+        apis = apis.filter(n => !n.startsWith('XPath'))
+
+        // https://streams.spec.whatwg.org/
+        apis = apis.filter(n => !n.startsWith('WritableStream'))
+
+
+        console.log(apis)
+    </script>
+</body>
+
+</html>

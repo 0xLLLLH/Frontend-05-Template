@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events</title>
+    <style>
+        #a {
+            width: 200px;
+            height: 200px;
+            background: turquoise;
+        }
+
+        #b {
+            width: 100px;
+            height: 100px;
+            background: tomato;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="a">
+        <div id="b"></div>
+    </div>
+    <script>
+        var a = document.getElementById('a');
+        var b = document.getElementById('b');
+
+        a.addEventListener('click', () => {
+            console.log('[bubble]a')
+        });
+        b.addEventListener('click', () => {
+            console.log('[capture]b')
+        }, { capture: true });
+        b.addEventListener('click', () => {
+            console.log('[bubble]b')
+        });
+
+        a.addEventListener('click', () => {
+            console.log('[capture]a')
+        }, { capture: true });
+    </script>
+</body>
+
+</html>
