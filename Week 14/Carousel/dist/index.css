@@ -1,0 +1,35 @@
+.carousel {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  width: 800px;
+  height: 600px;
+}
+
+.carousel > .slide {
+  display: none;
+  position: absolute;
+  flex-shrink: 0;
+  width: 800px;
+  height: 600px;
+  z-index: 1;
+}
+
+.carousel > .slide.prev {
+  display: block;
+  transform: translateX(-100%);
+  transition: all 0.3s ease-in-out;
+}
+
+.carousel > .slide.next {
+  display: block;
+  transform: translateX(100%);
+  transition: all 0.3s ease-in-out;
+}
+
+.carousel > .slide.current {
+  display: block;
+  z-index: 10;
+  transform: translateX(0);
+  transition: all 0.3s ease-in-out;
+}

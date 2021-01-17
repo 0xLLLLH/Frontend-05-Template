@@ -1,0 +1,11 @@
+{
+  "compileOnSave": true,
+  "include": ["./src/**/*.ts"],
+  "compilerOptions": {
+    "checkJs": false,
+    "target": "es2018",
+    "module": "commonjs",
+    "experimentalDecorators": true,
+    "isolatedModules": true
+  }
+}
